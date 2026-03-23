@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lista de Tarefas</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <h1>Minhas Tarefas</h1>
+
+  <input type="text" id="tarefa" placeholder="Digite uma tarefa">
+  <button onclick="adicionar()">Adicionar</button>
+
+  <ul id="lista"></ul>
+
+  <script>
+
+    // carregar tarefas ao abrir
+    window.onload = function() {
+      let tarefas = JSON.parse(localStorage.getItem("tarefas")) || [];
+      tarefas.forEach(t => criarTarefa(t.texto, t.feito));
+    };
+
+    function salvar() {
+      let lista = document.querySelectorAll("li");
+      let tarefas = [];
+
+      lista.forEach(li => {
+        let texto = li.querySelector("span").textContent;
+        let feito = li.querySelector("span").classList.contains("feito");
+
+        tarefas.push({ texto, feito });
+      });
+
+      localStorage.setItem("tarefas", JSON.stringify(tarefas));
+    }
+
+    function adicionar() {
+      let input = document.getElementById("tarefa");
+
+      if (input.value === "") {
+        alert("Digite uma tarefa!");
+        return;
+      }
+
+      criarTarefa(input.value, false);
+      input.value = "";
+      salvar();
+    }
+
+    function criarTarefa(texto, feito) {
+      let lista = document.getElementById("lista");
+
+      let li = document.createElement("li");
+
+      let span = document.createElement("span");
+      span.textContent = texto;
+
+      if (feito) {
+        span.classList.add("feito");
+      }
+
+      span.onclick = function() {
+        span.classList.toggle("feito");
+        salvar();
+      };
+
+      let botaoExcluir = document.createElement("button");
+      botaoExcluir.textContent = "❌";
+
+      botaoExcluir.onclick = function() {
+        li.remove();
+        salvar();
+      };
+
+      li.appendChild(span);
+      li.appendChild(botaoExcluir);
+
+      lista.appendChild(li);
+    }
+
+  </script>
+
+</body>
+</html>
